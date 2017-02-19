@@ -5,10 +5,11 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
     && apt-get upgrade -y \
-	&& apt-get install -y wget \
+    && apt-get install -y wget \
     && wget -O- http://nginx.org/keys/nginx_signing.key | apt-key add - \
     && echo "deb http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
     && echo "deb-src http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
+    && apt-get update \
     && apt-get -y install supervisor \
                           git \
                           nginx \
@@ -21,8 +22,6 @@ RUN apt-get update \
                           php5-mcrypt \
                           php5-tidy \
                           php5-xmlrpc \
-                          php5-xsl \
-                          php5-dev \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer \
     && apt-get remove -y `dpkg -l | grep -e \-dev | sed 's/ii//g' \
     	| sed 's/rc//g' | sed 's/^ *//;s/ *$//' \
@@ -73,6 +72,9 @@ ADD ./supervisord.conf /etc/supervisord.conf
 ADD ./entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
+
+# example script
+ADD ./phpinfo.php /var/www/html/index.php
 
 # change owner
 RUN chown -Rf www-data.www-data /var/www/html/
