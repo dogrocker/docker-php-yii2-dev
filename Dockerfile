@@ -3,15 +3,14 @@ MAINTAINER Kanin Peanviriyakulkit <kanin.pean@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN sed -i -e"s/httpredir.debian.org/ftp.th.debian.org/" /etc/apt/sources.list \
-	&& apt-get update \
+RUN apt-get update \
+    && apt-get upgrade -y \
 	&& apt-get install -y wget \
     && wget -O- http://nginx.org/keys/nginx_signing.key | apt-key add - \
     && echo "deb http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
     && echo "deb-src http://nginx.org/packages/mainline/debian/ jessie nginx" >> /etc/apt/sources.list \
     && apt-get -y install supervisor \
                           git \
-                          vim \
                           nginx \
                           php5-fpm \
                           php5-cli \
@@ -23,13 +22,8 @@ RUN sed -i -e"s/httpredir.debian.org/ftp.th.debian.org/" /etc/apt/sources.list \
                           php5-tidy \
                           php5-xmlrpc \
                           php5-xsl \
-                          php5-xdebug \
                           php5-dev \
-                          pkg-config \
-                          libpcre3-dev \
-                          libsasl2-dev \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer global require "fxp/composer-asset-plugin:^1.2.0" \
     && apt-get remove -y `dpkg -l | grep -e \-dev | sed 's/ii//g' \
     	| sed 's/rc//g' | sed 's/^ *//;s/ *$//' \
 		| sed 's/ \+ /\t/g' | cut -f 1` \
